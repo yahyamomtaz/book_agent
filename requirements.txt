@@ -1,1 +1,3 @@
-pip install watchdog python-docx modelcontextprotocol
+watchdog
+python-docx
+mcp

@@ -1,3 +1,6 @@
+from typing import Any
+
+
 import os
 import json
 from utils import extract_author_from_docx, generate_js_file
@@ -14,7 +17,7 @@ def process_book_folder(book_folder):
 
     # 3. Get image files
     image_files = sorted([f for f in os.listdir(book_folder) if f.endswith('.jpg')])
-    image_url_prefix = f"https://www.magic.unina.it/collections/incunaboli/{book_id}-{author.replace(' ', '-').lower()}"
+    image_url_prefix = f"https://www.magic.unina.it/collections/cinquecentine/{book_id}-{author.replace(' ', '-').lower()}"
 
     manifest = {
         "@context": "http://iiif.io/api/presentation/2/context.json",
@@ -29,33 +32,38 @@ def process_book_folder(book_folder):
         ]
     }
 
-    # Generate canvases
-    for index, file_name in enumerate(image_files):
-        canvas_id = f"{image_url_prefix}/canvas{index + 1}"
-        label = file_name.split('_', 1)[-1].rsplit('.', 1)[0]
-
-        canvas = {
+    def generate_canvas(file_name, index):
+        file_path = f"{image_url_prefix}/{file_name}"
+        canvas_id = f"{image_url_prefix}/canvas{index+1}"
+        
+        label = file_name.split('_', 1)[1].rsplit('.', 1)[0]
+        
+        return {
             "@id": canvas_id,
             "@type": "sc:Canvas",
             "label": label,
-            "height": 3933,
-            "width": 2645,
+            "height": 3933,  
+            "width": 2645,  
             "images": [
                 {
                     "@type": "oa:Annotation",
                     "motivation": "sc:painting",
                     "resource": {
-                        "@id": f"{image_url_prefix}/{file_name}",
+                        "@id": file_path,
                         "@type": "dctypes:Image",
                         "format": "image/jpeg",
-                        "height": 3933,
-                        "width": 2645
+                        "height": 3933,  
+                        "width": 2645    
                     },
                     "on": canvas_id
                 }
             ]
         }
-        manifest["sequences"][0]["canvases"].append(canvas)
+    # Generate canvases
+    for index, image_file in enumerate(image_files):
+        print(f"Processing file: {image_file}")
+
+        manifest['sequences'][0]['canvases'].append(generate_canvas(image_file, index))
 
     # Write manifest.json
     manifest_path = os.path.join(book_folder, "manifest.json")

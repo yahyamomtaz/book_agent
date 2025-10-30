@@ -7,8 +7,8 @@ def extract_author_from_docx(docx_path):
         text = "\n".join(p.text for p in document.paragraphs)
         # very simple rule — customize this
         for line in text.splitlines():
-            if "Author:" in line:
-                return line.split("Author:")[1].strip()
+            if "Autore:" in line:
+              return line.split("Autore:")[1].strip().rstrip(". ")
         return "Unknown Author"
     except Exception as e:
         print(f"⚠️ Failed to read docx {docx_path}: {e}")
