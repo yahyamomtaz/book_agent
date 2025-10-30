@@ -1,0 +1,6 @@
+{
+  "name": "book-agent",
+  "version": "1.0.0",
+  "entry_point": "python mcp_server.py",
+  "protocol": "stdio"
+}
